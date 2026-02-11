@@ -14,21 +14,22 @@ async def assistente(websocket):
     print("ESP32 connesso!")
     async for message in websocket:
         if isinstance(message, str) and message == "STOP":
-            prompt = "Rispondi in modo breve: sono il tuo assistente ESP32, tutto funziona!"
+            prompt = "Rispondi in modo molto breve: sono il tuo assistente ESP32, tutto funziona correttamente!"
             try:
                 response = model.generate_content(prompt)
                 tts = gTTS(text=response.text, lang='it')
                 mp3_fp = io.BytesIO()
                 tts.write_to_fp(mp3_fp)
                 await websocket.send(mp3_fp.getvalue())
+                print("Risposta inviata all'ESP32")
             except Exception as e:
-                print(f"Errore: {e}")
+                print(f"Errore Gemini: {e}")
 
-# Porta dinamica per Render
+# Porta dinamica richiesta da Render
 port = int(os.environ.get("PORT", 10000))
 
 async def main():
-    # Ascolta su 0.0.0.0 e sulla porta corretta
+    # Ascolta su 0.0.0.0 per essere raggiungibile dall'esterno
     async with websockets.serve(assistente, "0.0.0.0", port):
         print(f"Server attivo sulla porta {port}")
         await asyncio.Future()
