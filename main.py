@@ -13,20 +13,18 @@ model = genai.GenerativeModel('gemini-1.5-flash')
 async def assistente(websocket):
     print("ESP32 connesso!")
     async for message in websocket:
-        # Quando l'ESP32 invia "STOP", generiamo la risposta
         if isinstance(message, str) and message == "STOP":
-            prompt = "Rispondi in modo molto breve: sono il tuo assistente ESP32, il server cloud è attivo e funzionante!"
+            prompt = "Rispondi in modo molto breve: sono il tuo assistente ESP32, il server è attivo!"
             try:
                 response = model.generate_content(prompt)
                 tts = gTTS(text=response.text, lang='it')
                 mp3_fp = io.BytesIO()
                 tts.write_to_fp(mp3_fp)
                 await websocket.send(mp3_fp.getvalue())
-                print("Risposta audio inviata!")
             except Exception as e:
-                print(f"Errore: {e}")
+                print(f"Errore Gemini: {e}")
 
-# Porta dinamica richiesta da Render
+# Porta richiesta da Render
 port = int(os.environ.get("PORT", 10000))
 
 async def main():
