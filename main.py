@@ -3,6 +3,7 @@ import websockets
 import os
 import google.generativeai as genai
 from gtts import gTTS
+import io
 from pydub import AudioSegment
 
 # Recupera la chiave API dalle variabili d'ambiente di Render
