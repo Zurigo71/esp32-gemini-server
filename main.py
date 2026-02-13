@@ -4,6 +4,7 @@ import os
 import google.generativeai as genai
 from gtts import gTTS
 import io
+import sys
 from pydub import AudioSegment
 
 # Recupera la chiave API dalle variabili d'ambiente di Render
@@ -15,6 +16,7 @@ async def assistente(websocket):
     print("ESP32 connesso!")
     async for message in websocket:
         if isinstance(message, str) and message == "STOP":
+            print("Richiesta risposta ricevuta...")
             prompt = "Rispondi in modo molto breve: sono il tuo assistente ESP32, il server è attivo!"
             try:
                 response = model.generate_content(prompt)
