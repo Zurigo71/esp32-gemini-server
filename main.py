@@ -4,8 +4,7 @@ import os
 import google.generativeai as genai
 from gtts import gTTS
 import io
-import sys
-from pydub import AudioSegment
+import miniaudio
 
 # Recupera la chiave API dalle variabili d'ambiente di Render
 api_key = os.environ.get("GEMINI_API_KEY")
@@ -19,19 +18,21 @@ async def assistente(websocket):
             print("Richiesta risposta ricevuta...")
             prompt = "Rispondi in modo molto breve: sono il tuo assistente ESP32, il server è attivo!"
             try:
+                # Genera testo con Gemini
                 response = model.generate_content(prompt)
-                print(f"Risposta Gemini: {response.text}")
+                text_response = response.text
+                print(f"Risposta Gemini: {text_response}")
                 
                 # Genera MP3 con gTTS
-                tts = gTTS(text=response.text, lang='it')
+                tts = gTTS(text=text_response, lang='it')
                 mp3_fp = io.BytesIO()
                 tts.write_to_fp(mp3_fp)
-                mp3_fp.seek(0)
+                mp3_data = mp3_fp.getvalue()
 
-                # Converti MP3 in PCM 16kHz Mono 16-bit usando pydub
-                audio = AudioSegment.from_file(mp3_fp, format="mp3")
-                audio = audio.set_frame_rate(16000).set_channels(1).set_sample_width(2)
-                pcm_data = audio.raw_data
+                # Decodifica MP3 direttamente in PCM 16kHz Mono 16-bit usando miniaudio
+                # Non serve FFmpeg né audioop!
+                decoded = miniaudio.decode(mp3_data, nchannels=1, sample_rate=16000)
+                pcm_data = decoded.samples.tobytes()
                 
                 print(f"Invio PCM: {len(pcm_data)} bytes")
                 await websocket.send(pcm_data)
@@ -48,6 +49,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-
