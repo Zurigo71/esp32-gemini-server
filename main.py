@@ -6,7 +6,7 @@ from gtts import gTTS
 import io
 
 # Recupera la chiave API dalle variabili d'ambiente di Render
-api_key = os.environ.get("GEMINI_API_KEY")
+api_key = os.environ.get("AIzaSyCYupPN87iP6O6u_5oOtrkCHZYRlaRISMU")
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
@@ -34,4 +34,5 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
